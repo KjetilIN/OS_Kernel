@@ -43,4 +43,9 @@ The next thing is to define the `_start` function. This function is called with 
 After defining the function, the next error is a linking error. Linker is a program that combines generated code with the executable. The error comes from the runtime is expected to be the C runtime, but it is not. To solve this, we just need to build for a bare metal target. 
 
 
+## Specs
+
+Here is my setup that was used for running and creating the kernel:
+![image](https://github.com/indrehusdev/OS_Kernel/assets/66110094/0623c42b-7f0b-46a0-9de2-6500ebc77e21)
+
 
