@@ -52,7 +52,66 @@ cargo build --target thumbv7em-none-eabihf
 
 When we add the `--target` argument, we cross compile for bare metal target on the system. 
 
+### A minimal rust kernel
+
+This repository creates a kernel with rust for a 64 bit x86 architecture. When you boot up the computer. It starts executing from firmware code that is stored in the ROM (read only memory). 
+
+The next step is to execute the Power-on self-test (POST). This tests looks for RAM and pre-initializing the CPU. Then it starts to look for the operating system kernel. 
+
+x86 has two firmware standards:
+- **BIOS** - Basic Input/Output System
+- **UEFI** - Unified Extensible Firmware Interface
+
+For this project, the BIOS will be used. It was created in 1980 and is therefor more supported than most. The UEFI is modern, has more features, but are more complex to implement. 
+
+When the computers starts, it is the BIOS that starts up and runs the self test, and initializes the hardware. Then it looks for a bootable disk. If found, it transfers control over to the bootloader. The bootloader takes up  512-bytes of executable code. It is stored in the beginning of the disk. If a bootloader is larger than 512B, then the bootloader is split into two stages. The bootloader has to determine the location of the kernel image on the disk. 
+
+The CPU has to to transitions between what mode it is in:
+- 16-bit real mode
+- 32-bit protected mode
+- 64-bit long mode
+
+Real mode is a operating mode for all x86 CPUs. It gets the name from the fact that the addresses in real mode, is always corresponding to real locations in memory. It gives software unlimited access to all addressable memory. 
+
+Protected mode is also a operating mode for all x86 CPUs. It is a mode that allows segmentation, virtual memory, paging and safe multitasking. When a software goes to protected mode, it also has to support real mode for backwards compatibility.  
+
+Long mode is the last operating mode where the 64 bit operating system can access 64 bit instructions and registers.
+
+Bootloader are written in assembly. This project will not create its own bootloader with assembly. However, I have written it down in my bucketlist of projects I want to create :-). For this project, a tool called `bootimage` is going to be used to automatic add the bootloader to kernel.
+
+To make a bootloader that is compatible for every operating system, you can use the one created by the Free Software foundation. It is called `Multiboot` and it creates an interface between the bootloader and the operating system. To set it up, all we need is a Multiboot header at the beginning of the kernel. Note that there are some problems with both documentation, page sizing and what CPU mode is supported. So in this project does not use the Mulitboot, because of compatibility. 
+
+In this project, we are going to switch to Rust nightly: 
+
+
+
+
+
+
+
+
 ## Specs
 
 Here is my setup that was used for running and creating the kernel:
 ![image](https://github.com/indrehusdev/OS_Kernel/assets/66110094/0623c42b-7f0b-46a0-9de2-6500ebc77e21)
+
+## Resources
+
+This was not possible without the great resources from:
+https://os.phil-opp.com/
+
+I recommend checking out his blog series. 
+
+Here is also a list of other topics that found me interesting during the implementation: 
+
+Read-only memory for memory that is not changed by software: <br>
+https://en.wikipedia.org/wiki/Read-only_memory
+
+Power-on self-test. The first thing a computer does on startup: <br>
+https://en.wikipedia.org/wiki/Power-on_self-test 
+
+BIOS firmware to provide runtime for the OS: <br>
+https://en.wikipedia.org/wiki/BIOS 
+
+Real mode: unlimited access for the software to all addressable memory. Research also protected and long mode, if this was interesting. <br>
+https://en.wikipedia.org/wiki/Real_mode
