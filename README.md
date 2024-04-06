@@ -5,10 +5,15 @@ An x86_64 kernel written in Rust, designed for safety and performance. Exploring
 
 ## Usage
 
+Setup Rust Nightly with the following command (see `rust-toolchain` file):
+```terminal
+rustup show
+```
+
 Build the target: 
 
 ```terminal
-cargo build --target thumbv7em-none-eabihf
+cargo build --target x86_64.json
 ```
 
 Run based on your OS: 
@@ -81,14 +86,15 @@ Bootloader are written in assembly. This project will not create its own bootloa
 
 To make a bootloader that is compatible for every operating system, you can use the one created by the Free Software foundation. It is called `Multiboot` and it creates an interface between the bootloader and the operating system. To set it up, all we need is a Multiboot header at the beginning of the kernel. Note that there are some problems with both documentation, page sizing and what CPU mode is supported. So in this project does not use the Mulitboot, because of compatibility. 
 
-In this project, we are going to switch to Rust nightly: 
+In this project, we are going to switch to Rust nightly. This is already setup. All you need is to run the following command: 
 
 ![image](https://github.com/indrehusdev/OS_Kernel/assets/66110094/e5016a36-5341-4c01-91d4-a099e0db71c8)
 
+The reason why we add it, it so that we can use experimental features. 
 
+We know the cargo build tool supports different targets. We need to setup the target so that no underlying OS is being used. The configuration of setting this up can be found in the `x86_64.json`
 
-
-
+The `llvm-target` is set to the correct architecture with no os. We also specify that we are going to use the Rust linker. We also set that in case of `panic`, the program should abort. We also disable red zone. The config does also add and remove certain features...
 
 
 ## Specs
@@ -116,3 +122,6 @@ https://en.wikipedia.org/wiki/BIOS
 
 Real mode: unlimited access for the software to all addressable memory. Research also protected and long mode, if this was interesting. <br>
 https://en.wikipedia.org/wiki/Real_mode
+
+Red zone, what is it: <br>
+https://os.phil-opp.com/red-zone/
