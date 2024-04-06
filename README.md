@@ -83,6 +83,7 @@ To make a bootloader that is compatible for every operating system, you can use 
 
 In this project, we are going to switch to Rust nightly: 
 
+![image](https://github.com/indrehusdev/OS_Kernel/assets/66110094/e5016a36-5341-4c01-91d4-a099e0db71c8)
 
 
 
