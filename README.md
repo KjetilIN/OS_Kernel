@@ -42,10 +42,17 @@ The next thing is to define the `_start` function. This function is called with 
 
 After defining the function, the next error is a linking error. Linker is a program that combines generated code with the executable. The error comes from the runtime is expected to be the C runtime, but it is not. To solve this, we just need to build for a bare metal target. 
 
+The error happens because the underlying linker thinks that it is compiling for an underlying operating system. It is not. We can use the following commands to build to a triple target.
+
+
+```terminal
+rustup target add thumbv7em-none-eabihf
+cargo build --target thumbv7em-none-eabihf
+```
+
+When we add the `--target` argument, we cross compile for bare metal target on the system. 
 
 ## Specs
 
 Here is my setup that was used for running and creating the kernel:
 ![image](https://github.com/indrehusdev/OS_Kernel/assets/66110094/0623c42b-7f0b-46a0-9de2-6500ebc77e21)
-
-
