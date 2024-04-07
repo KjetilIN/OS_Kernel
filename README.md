@@ -20,16 +20,10 @@ Build the target:
 cargo build --target x86_64.json
 ```
 
-Run based on your OS: 
+Run the build: 
 
 ```terminal
-# Linux
-cargo rustc -- -C link-arg=-nostartfiles
-# Windows
-cargo rustc -- -C link-args="/ENTRY:_start /SUBSYSTEM:console"
-# macOS
-cargo rustc -- -C link-args="-e __start -static -nostartfiles"
-
+cargo run
 ```
 
 
@@ -159,9 +153,9 @@ https://os.phil-opp.com/red-zone/
 SIMD: <br>
 https://en.wikipedia.org/wiki/Single_instruction,_multiple_data
 
-VGA Text Mode: <b>
+VGA Text Mode: <br>
 https://en.wikipedia.org/wiki/VGA_text_mode
 
-Executable and Linkable format: <b>
+Executable and Linkable format: <br>
 https://en.wikipedia.org/wiki/Executable_and_Linkable_Format 
 
