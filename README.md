@@ -1,4 +1,8 @@
 # OS_Kernel
+
+![image](https://github.com/indrehusdev/OS_Kernel/assets/66110094/c10c44d0-6d75-4506-bcff-4b1bcfa8cbc3)
+
+
 An x86_64 kernel written in Rust, designed for safety and performance. Exploring low-level system operations and concurrency, this project aims to deepen understanding of operating system fundamentals.
 
 
