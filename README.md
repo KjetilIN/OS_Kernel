@@ -120,6 +120,10 @@ Boot it with the bootable QEMU:
 qemu-system-x86_64 -drive format=raw,file=target/x86_64/debug/bootimage-os-kernel.bin
 ```
 
+### Unit and Integration testing in no_std executables
+
+Rust has a built-in test framework. This framework does not need to be setup. It is simply as easy as adding the macro for testing and then run `cargo test`. However this is standard library. Testing with `no_std` is more difficult, but this project has some test. This is implemented with the `custom_test_frameworks` feature.  
+
 
 ## Specs
 
