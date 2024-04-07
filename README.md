@@ -94,7 +94,33 @@ The reason why we add it, it so that we can use experimental features.
 
 We know the cargo build tool supports different targets. We need to setup the target so that no underlying OS is being used. The configuration of setting this up can be found in the `x86_64.json`
 
-The `llvm-target` is set to the correct architecture with no os. We also specify that we are going to use the Rust linker. We also set that in case of `panic`, the program should abort. We also disable red zone. The config does also add and remove certain features...
+The `llvm-target` is set to the correct architecture with no os. We also specify that we are going to use the Rust linker. We also set that in case of `panic`, the program should abort. We also disable red zone. The config does also add and remove certain features. The features for SIMD are disabled. It is used to significantly improve programs. However, it is can lead to large performance issues. 
+
+Next step is to add the `Core` library to the target. This library contains features like `Result` and `Option`. This library is not setup for compiling to our costume target. The solution is by adding an experimental feature to the `Cargo.toml` file. It will recompile the library.
+
+To build, you will ned to setup the config for cargo. I created a file in `.cargo/` called `config.toml`. This file includes configuring the std and setting the default target for this repository. 
+
+
+Lets add text to the screen using VGS buffer. It is a special buffer that is mapped to the VGA hardware and contains a set of content. The VGA buffer starts at `0xb8000`. We create a variable for the text as a byte array: 
+
+```rust
+static HELLO: &[u8] = b"Hello World!";
+```
+
+Then we iterate over each character in the byte array and set the color of the corresponding character. We install the `bootimage` dependency. We can use it with the following command to setup a bootable image: `cargo bootimage`. Bootimage combines the bootloader and your kernel into a bootable disk image.
+
+The following steps are taken during creating of the bootable image: 
+- It creates a ELF: Executable and Likable format. It is a file format for executables. 
+- It compiles the dependencies as a standalone executable.
+- It links the bytes of the kernel ELF file to the bootloader.
+
+Now, to start QEMU, a way to boot the bootable disk: 
+https://www.qemu.org/download/
+
+Boot it with the bootable QEMU:
+```terminal
+qemu-system-x86_64 -drive format=raw,file=target/x86_64/debug/bootimage-os-kernel.bin
+```
 
 
 ## Specs
@@ -125,3 +151,13 @@ https://en.wikipedia.org/wiki/Real_mode
 
 Red zone, what is it: <br>
 https://os.phil-opp.com/red-zone/
+
+SIMD: <br>
+https://en.wikipedia.org/wiki/Single_instruction,_multiple_data
+
+VGA Text Mode: <b>
+https://en.wikipedia.org/wiki/VGA_text_mode
+
+Executable and Linkable format: <b>
+https://en.wikipedia.org/wiki/Executable_and_Linkable_Format 
+
