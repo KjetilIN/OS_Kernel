@@ -143,7 +143,9 @@ impl ColorCode{
 
 The byte is created by first adding th background color. Then **shifting it left by 4 bits**. Then doing the or operator with the foreground color. That will combine the two colors into a single byte, where the background color comes first and then the foreground color. Each color using 4 bits. 
 
-Next two new structs - `ScreenChar` and `Bugger`. The ScreenChar is for a single character. It contains the ascii code and th color code. The buffer represents the text buffer. We set the size of the buffer, so that it has 25 rows and 80 columns. By using the macro `repr(C)`, we make the struct structure be in the order as a C structure. The order of the fields are important for the screen character.  
+Next two new structs - `ScreenChar` and `Bugger`. The ScreenChar is for a single character. It contains the ascii code and th color code. The buffer represents the text buffer. We set the size of the buffer, so that it has 25 rows and 80 columns. By using the macro `repr(C)`, we make the struct structure be in the order as a C structure. The order of the fields are important for the screen character. 
+
+Next we need to be able to write. The `Writer` struct keeps track of where in the column position it is currently is writing at. We also keep track of the current color code. Last is the buffer that is static and will have a lifetime the same length as the program. Two core functions are implemented: `write_byte` and `write_string` (See `src/vga_buffer.rs`). For a string, we iterate over each byte and use the `write_byte` function to add the char to the buffer (with the correct color). There is one important thing to remember when writing to the VGA buffer. It only supports ASCII characters (code page 437). Since rust supports strings that are `UTF-8` by default. The byte range for ASCII is between `0x20` and `0x7e`. For all other chars we write a box to the buffer (`0xfe`). 
 
 ### Unit and Integration testing in no_std executables
 
@@ -186,6 +188,9 @@ https://en.wikipedia.org/wiki/Single_instruction,_multiple_data
 
 VGA Text Mode: <br>
 https://en.wikipedia.org/wiki/VGA_text_mode
+
+Code page 437: character set of supported chars for the VGA buffer: <br>
+https://en.wikipedia.org/wiki/Code_page_437 
 
 Executable and Linkable format: <br>
 https://en.wikipedia.org/wiki/Executable_and_Linkable_Format 

@@ -54,3 +54,60 @@ const BUFFER_WIDTH: usize = 80;
 struct Buffer{
     chars: [[ScreenChar; BUFFER_WIDTH];BUFFER_HEIGHT],
 }
+
+/// Writer that will always write the last line
+pub struct Writer{
+    column_position: usize, 
+    color_code: ColorCode,
+    buffer: &'static mut Buffer,
+}
+
+
+impl Writer {
+    /// Function for writing a ASCII byte to the buffer
+    pub fn write_byte(&mut self, byte:u8){
+        match byte {
+            /// If the byte is a new line
+            b'\n' => self.new_line(),
+
+            // Handling the byte value
+            byte => {
+                // If the column position is on the last position, we go to a new line
+                if self.column_position >= BUFFER_WIDTH{
+                    self.new_line();
+                }
+
+                let row = BUFFER_HEIGHT - 1; 
+                let col = self.column_position;
+
+                let color_code = self.color_code;
+
+                // Adding the char to the buffer
+                self.buffer.chars[row][col] = ScreenChar{
+                    ascii_character: byte,
+                    color_code
+                };
+
+                // Incrementing the position 
+                self.column_position += 1; 
+            }
+
+            
+        }
+    }
+
+
+    /// Function for implementing the 
+    fn new_line(&mut self){ !unimplemented!("New line not implemented yet")}
+
+    /// Function that writes a string to the buffer
+    pub fn write_string(&mut self, s: &str){
+        for byte in s.bytes(){
+            match byte {
+                0x20..=0x7e | b'\n' => self.write_byte(byte),
+                _ => self.write_byte(0xfe),
+            }
+        }
+    }
+    
+}
