@@ -1,3 +1,11 @@
+use volatile::Volatile; // Using the volatile create to make the buffer volatile 
+use core::fmt;          // Using fmt for implementing the write macro 
+
+// Defining constants for the size of the screen 
+const BUFFER_HEIGHT: usize = 25;
+const BUFFER_WIDTH: usize = 80;
+
+
 #[allow(dead_code)] // Stop the compiler for complaining about unused variant of the color enum 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)] 
 #[repr(u8)] // Specify that each value is stored as u8 
@@ -34,8 +42,6 @@ impl ColorCode{
     }
 }
 
-
-
 /// Struct that represents the a screen character in the VGA buffer
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
@@ -43,15 +49,6 @@ struct ScreenChar{
     ascii_character: u8,
     color_code: ColorCode, 
 }
-
-// Defining constants for the size of the screen 
-const BUFFER_HEIGHT: usize = 25;
-const BUFFER_WIDTH: usize = 80;
-
-
-// Using the volatile create to make the buffer volatile 
-use volatile::Volatile;
-
 
 /// The VGA buffer itself with a set size 
 #[repr(transparent)]
@@ -102,7 +99,32 @@ impl Writer {
 
 
     /// Function for implementing the 
-    fn new_line(&mut self){ !unimplemented!("New line not implemented yet")}
+    fn new_line(&mut self){ 
+        for row in 1..BUFFER_HEIGHT {
+            for col in 1..BUFFER_WIDTH {
+                // Reading the character and writing it one row above 
+                let character: ScreenChar = self.buffer[row][col].read();
+                self.buffer.chars[row-1][col].write(character)
+
+            }
+        }
+
+        self.clear_row(BUFFER_HEIGHT - 1); 
+        self.column_position = 0;
+    }
+
+    fn clear_row(&mut self, row: usize){
+        // Defining a blank ASCII char
+        let blank = ScreenChar{
+            ascii_character: b' ',
+            color_code: self.color_code
+        };
+
+        // Write blank ASCII char for the row
+        for col in 0..BUFFER_WIDTH{
+            self.buffer.chars[row][col].write(blank);
+        }
+    }
 
     /// Function that writes a string to the buffer
     pub fn write_string(&mut self, s: &str){
@@ -116,9 +138,19 @@ impl Writer {
     
 }
 
+/// Implementing the write trait for the VGA buffer writer 
+impl fmt::Write for Writer{
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        self.write_string(s);
+        Ok(())
+    }
+}
+
 /// Function that prints the basic information of the OS
 /// Uses the writer struct to write to the VGA buffer
 pub fn print_introduction(){
+    // Using the write trait for this function
+    use core::fmt::Write; 
 
     /// Create a new writer 
     let mut writer = Writer{
@@ -130,5 +162,8 @@ pub fn print_introduction(){
     writer.write_byte(b'[');
     writer.write_string("INFO");
     writer.write_byte(b']');
-    writer.write_string(" OS by Kjetil Indrehus");
+
+    // Using the macro for writing to VGA Buffer 
+    write!(writer, " OS by Kjetil Indrehus").unwrap();
 }
+

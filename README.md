@@ -159,6 +159,10 @@ We set values like the color code and the column position. However, the `buffer`
 
 Volatile refers to a value that can be changed over time. It is simply out of control of the source code. The crate `volatile` allows for wrapping a type with read and write method. These methods are not optimized and not volatile. 
 
+The next implementation is for adding macro support for rust macros. By simply implementing `fmt::Write` trait we can support the write macro. With this macro, the implemented the `new_line` and `clear_line` functions. 
+
+
+
 ### Unit and Integration testing in no_std executables
 
 Rust has a built-in test framework. This framework does not need to be setup. It is simply as easy as adding the macro for testing and then run `cargo test`. However this is standard library. Testing with `no_std` is more difficult, but this project has some test. This is implemented with the `custom_test_frameworks` feature.  
