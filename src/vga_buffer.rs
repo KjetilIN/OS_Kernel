@@ -111,3 +111,20 @@ impl Writer {
     }
     
 }
+
+/// Function that prints the basic information of the OS
+/// Uses the writer struct to write to the VGA buffer
+pub fn print_introduction(){
+
+    /// Create a new writer 
+    let mut writer = Writer{
+        column_position: 0,
+        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+    };
+
+    writer.write_byte(b'[');
+    writer.write_string("INFO");
+    writer.write_byte(b']');
+    writer.write_string(" OS by Kjetil Indrehus");
+}
