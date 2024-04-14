@@ -141,7 +141,9 @@ impl ColorCode{
 }
 ```
 
-The byte is created by first adding th background color. Then **shifting it left by 4 bits**. Then doing the or operator with the foreground color. That will combine the two colors into a single byte, where the background color comes first and then the foreground color. Each taking 4 bits. 
+The byte is created by first adding th background color. Then **shifting it left by 4 bits**. Then doing the or operator with the foreground color. That will combine the two colors into a single byte, where the background color comes first and then the foreground color. Each color using 4 bits. 
+
+Next two new structs - `ScreenChar` and `Bugger`. The ScreenChar is for a single character. It contains the ascii code and th color code. The buffer represents the text buffer. We set the size of the buffer, so that it has 25 rows and 80 columns. By using the macro `repr(C)`, we make the struct structure be in the order as a C structure. The order of the fields are important for the screen character.  
 
 ### Unit and Integration testing in no_std executables
 

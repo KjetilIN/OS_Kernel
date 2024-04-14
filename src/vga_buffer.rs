@@ -24,7 +24,7 @@ pub enum Color{
 #[repr(transparent)]
 struct ColorCode(u8);
 
-// Implementing the color code
+/// Implementing the color byte code for the VGA buffer
 impl ColorCode{
     fn new(foreground: Color, background: Color) -> ColorCode{
         // Start with                                       = 00000000
@@ -35,3 +35,22 @@ impl ColorCode{
 }
 
 
+
+/// Struct that represents the a screen character in the VGA buffer
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(C)]
+struct ScreenChar{
+    ascii_character: u8,
+    color_code: ColorCode, 
+}
+
+// Defining constants for the size of the screen 
+const BUFFER_HEIGHT: usize = 25;
+const BUFFER_WIDTH: usize = 80;
+
+
+/// The VGA buffer itself with a set size 
+#[repr(transparent)]
+struct Buffer{
+    chars: [[ScreenChar; BUFFER_WIDTH];BUFFER_HEIGHT],
+}
