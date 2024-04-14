@@ -145,7 +145,19 @@ The byte is created by first adding th background color. Then **shifting it left
 
 Next two new structs - `ScreenChar` and `Bugger`. The ScreenChar is for a single character. It contains the ascii code and th color code. The buffer represents the text buffer. We set the size of the buffer, so that it has 25 rows and 80 columns. By using the macro `repr(C)`, we make the struct structure be in the order as a C structure. The order of the fields are important for the screen character. 
 
-Next we need to be able to write. The `Writer` struct keeps track of where in the column position it is currently is writing at. We also keep track of the current color code. Last is the buffer that is static and will have a lifetime the same length as the program. Two core functions are implemented: `write_byte` and `write_string` (See `src/vga_buffer.rs`). For a string, we iterate over each byte and use the `write_byte` function to add the char to the buffer (with the correct color). There is one important thing to remember when writing to the VGA buffer. It only supports ASCII characters (code page 437). Since rust supports strings that are `UTF-8` by default. The byte range for ASCII is between `0x20` and `0x7e`. For all other chars we write a box to the buffer (`0xfe`). 
+Next we need to be able to write. The `Writer` struct keeps track of where in the column position it is currently is writing at. We also keep track of the current color code. Last is the buffer that is static and will have a lifetime the same length as the program. Two core functions are implemented: `write_byte` and `write_string` (See `src/vga_buffer.rs`). For a string, we iterate over each byte and use the `write_byte` function to add the char to the buffer (with the correct color). There is one important thing to remember when writing to the VGA buffer. It only supports ASCII characters (code page 437). Since rust supports strings that are `UTF-8` by default. The byte range for ASCII is between `0x20` and `0x7e`. For all other chars we write a box to the buffer (`0xfe`).
+
+Using this we can print any text we want to the VGA buffer. We crate a writer like this: 
+```rust 
+let mut writer = Writer{
+        column_position: 0,
+        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+    };
+```
+We set values like the color code and the column position. However, the `buffer`is not trivial to understand. The VGA buffer is at `0xb8000`. The buffer needs to be mutable reference to the VGA address. Note that printing the any non-ascii characters prints a box as expected. The problem is that the compiler does not know that we are accessing the VGA buffer memory instead of RAM. This could lead to the compiler deciding that these writes are unnecessary (during compiler optimization ). We can add the `volatile` dependency to fix this. 
+
+Volatile refers to a value that can be changed over time. It is simply out of control of the source code. The crate `volatile` allows for wrapping a type with read and write method. These methods are not optimized and not volatile. 
 
 ### Unit and Integration testing in no_std executables
 
@@ -201,6 +213,9 @@ https://en.wikipedia.org/wiki/VGA_text_mode
 
 Code page 437: character set of supported chars for the VGA buffer: <br>
 https://en.wikipedia.org/wiki/Code_page_437 
+
+Volatile, value that is prone to change over time: <br>
+https://en.wikipedia.org/wiki/Volatile_(computer_programming) 
 
 Executable and Linkable format: <br>
 https://en.wikipedia.org/wiki/Executable_and_Linkable_Format 

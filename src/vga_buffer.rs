@@ -49,10 +49,14 @@ const BUFFER_HEIGHT: usize = 25;
 const BUFFER_WIDTH: usize = 80;
 
 
+// Using the volatile create to make the buffer volatile 
+use volatile::Volatile;
+
+
 /// The VGA buffer itself with a set size 
 #[repr(transparent)]
 struct Buffer{
-    chars: [[ScreenChar; BUFFER_WIDTH];BUFFER_HEIGHT],
+    chars: [[Volatile<ScreenChar>; BUFFER_WIDTH];BUFFER_HEIGHT],
 }
 
 /// Writer that will always write the last line
@@ -82,11 +86,11 @@ impl Writer {
 
                 let color_code = self.color_code;
 
-                // Adding the char to the buffer
-                self.buffer.chars[row][col] = ScreenChar{
+                // Adding the char to the buffer by using the volatile write method 
+                self.buffer.chars[row][col].write(ScreenChar{
                     ascii_character: byte,
                     color_code
-                };
+                });
 
                 // Incrementing the position 
                 self.column_position += 1; 
