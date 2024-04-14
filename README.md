@@ -1,10 +1,10 @@
-# OS_Kernel
+# OS Kernel
 
-![image](https://github.com/indrehusdev/OS_Kernel/assets/66110094/c10c44d0-6d75-4506-bcff-4b1bcfa8cbc3)
+![image](https://github.com/KjetilIN/OS_Kernel/assets/66110094/efaf597c-caf9-40ad-ab0a-1e91f5d3cb17)
+
 
 
 An x86_64 kernel written in Rust, designed for safety and performance. Exploring low-level system operations and concurrency, this project aims to deepen understanding of operating system fundamentals.
-
 
 
 ## Usage
@@ -153,6 +153,16 @@ Rust has a built-in test framework. This framework does not need to be setup. It
 
 
 A cool feature within rust is the ability to conditional compilation. By using `#[cfg(..)]` we can tell the compiler to conditionally render code based on the flags provided to the compiler. In our case, we can specify that if the `test` flag is set we run the test code. 
+
+
+### Screenshots during development 
+Here are some cool screenshots I took during development. Each represetent a small milestone.  
+
+#### First Boot 
+![image](https://github.com/indrehusdev/OS_Kernel/assets/66110094/c10c44d0-6d75-4506-bcff-4b1bcfa8cbc3)
+
+#### Writing custome text to the VGA buffer
+![image](https://github.com/KjetilIN/OS_Kernel/assets/66110094/97e2a968-4735-49dc-aa67-c6194615ceb6)
 
 ## Specs
 
