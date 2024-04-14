@@ -120,10 +120,35 @@ Boot it with the bootable QEMU:
 qemu-system-x86_64 -drive format=raw,file=target/x86_64/debug/bootimage-os-kernel.bin
 ```
 
+### VGA Text Mode 
+
+The VGA text mode is a very simple way of printing information to the screen. The VGA text bugger is a two dimensional array with 25 rows and 80 columns for rendering the screen. Each array has the following information:
+
+- ASCII Code point => 0-7 bits 
+- Foreground color => 8-11 bits
+- Background color => 12-14 bits
+- Blink => 15 bit
+
+The first byte is for representing the ascii character. The next byte is for representing the the foreground color. Then the next 3 bit for background color and then the last bit is for if the ascii character should blink or not. The VGA Buffer is available via the address `0xb800`. It is not in RAM, but directly accessible as write and read in the VGA hardware. '
+
+We need to represent each color. We can do this by first creating the enum that represents the a color option: `pub enum Color{}`. Each value is stored as a `u8`. The article also specifies that we do not need a whole byte to represent each option. However, `u4` does not exist in rust. Then we create a structure that represent a color byte. The byte will include information about foreground and background color. The following code is the implementation for creating a new color byte: 
+
+```rust
+impl ColorCode{
+    fn new(foreground: Color, background: Color) -> ColorCode{
+        ColorCode(((background as u8) << 4) | (foreground as u8))
+    }
+}
+```
+
+The byte is created by first adding th background color. Then **shifting it left by 4 bits**. Then doing the or operator with the foreground color. That will combine the two colors into a single byte, where the background color comes first and then the foreground color. Each taking 4 bits. 
+
 ### Unit and Integration testing in no_std executables
 
 Rust has a built-in test framework. This framework does not need to be setup. It is simply as easy as adding the macro for testing and then run `cargo test`. However this is standard library. Testing with `no_std` is more difficult, but this project has some test. This is implemented with the `custom_test_frameworks` feature.  
 
+
+A cool feature within rust is the ability to conditional compilation. By using `#[cfg(..)]` we can tell the compiler to conditionally render code based on the flags provided to the compiler. In our case, we can specify that if the `test` flag is set we run the test code. 
 
 ## Specs
 

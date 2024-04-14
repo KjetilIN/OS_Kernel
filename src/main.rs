@@ -1,6 +1,8 @@
 #![no_std] // Ignoring the standard library 
 #![no_main] // Telling the rust compiler that we are not using a normal entry point
 
+mod vga_buffer;
+
 // Importing the type for the error handler
 use core::panic::PanicInfo;
 
