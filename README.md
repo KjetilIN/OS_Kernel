@@ -161,6 +161,10 @@ Volatile refers to a value that can be changed over time. It is simply out of co
 
 The next implementation is for adding macro support for rust macros. By simply implementing `fmt::Write` trait we can support the write macro. With this macro, the implemented the `new_line` and `clear_line` functions. 
 
+For now the `Writer`has been a instance. It makes more sense to have it as a static writer. A static writer can also be easily used by other modules. However, compiling with the newly added static gives an error. Rust is not able to convert raw pointers to references at compile time. This is because static variables are initialized at compile time, while normal variables are created at run time. We can make the static be compiled at run time by using the macro `lazy-static`. It is a crate that provides lazy initialing of statics. When you use the macro, it will only generate the static when it is first used. 
+
+The next problem is that the `WRITER` static is immutable. To fix this we can make it mutable. There is a simple reason why this is a bad idea: race conditions. To synchronize the `WRITER` so that no race conditions can happen me have to user mutexes. Mutex is there to protect shared data. It will block threads that tries to access the same memory. This will make them wait until it is available. To fix this we are going to use a spinlock. A spinlock will cause the thread to keep trying until the lock is available. 
+
 
 
 ### Unit and Integration testing in no_std executables
@@ -172,12 +176,12 @@ A cool feature within rust is the ability to conditional compilation. By using `
 
 
 ### Screenshots during development 
-Here are some cool screenshots I took during development. Each represetent a small milestone.  
+Here are some cool screenshots I took during development. Each represent a small milestone in this long process of creating the OS Kernel.  
 
 #### First Boot 
 ![image](https://github.com/indrehusdev/OS_Kernel/assets/66110094/c10c44d0-6d75-4506-bcff-4b1bcfa8cbc3)
 
-#### Writing custome text to the VGA buffer
+#### Writing custom text to the VGA buffer
 ![image](https://github.com/KjetilIN/OS_Kernel/assets/66110094/97e2a968-4735-49dc-aa67-c6194615ceb6)
 
 ## Specs
@@ -220,6 +224,9 @@ https://en.wikipedia.org/wiki/Code_page_437
 
 Volatile, value that is prone to change over time: <br>
 https://en.wikipedia.org/wiki/Volatile_(computer_programming) 
+
+Spinlock: <br>
+https://en.wikipedia.org/wiki/Spinlock 
 
 Executable and Linkable format: <br>
 https://en.wikipedia.org/wiki/Executable_and_Linkable_Format 

@@ -1,5 +1,7 @@
-use volatile::Volatile; // Using the volatile create to make the buffer volatile 
-use core::fmt;          // Using fmt for implementing the write macro 
+use volatile::Volatile;         // Using the volatile create to make the buffer volatile 
+use core::fmt;                  // Using fmt for implementing the write macro 
+use lazy_static::lazy_static;   // Macro for initiating the static at compile time, when it is first used.
+
 
 // Defining constants for the size of the screen 
 const BUFFER_HEIGHT: usize = 25;
@@ -68,7 +70,7 @@ impl Writer {
     /// Function for writing a ASCII byte to the buffer
     pub fn write_byte(&mut self, byte:u8){
         match byte {
-            /// If the byte is a new line
+            // If the byte is a new line
             b'\n' => self.new_line(),
 
             // Handling the byte value
@@ -103,7 +105,7 @@ impl Writer {
         for row in 1..BUFFER_HEIGHT {
             for col in 1..BUFFER_WIDTH {
                 // Reading the character and writing it one row above 
-                let character: ScreenChar = self.buffer[row][col].read();
+                let character: ScreenChar = self.buffer.chars[row][col].read();
                 self.buffer.chars[row-1][col].write(character)
 
             }
@@ -146,13 +148,23 @@ impl fmt::Write for Writer{
     }
 }
 
+lazy_static! {
+    /// The static writer for the vga buffer module 
+    pub static WRITER: Writer = Writer{
+        column_position: 0,
+        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        buffer: unsafe{ &mut *(0xb8000 as *mut Buffer)}
+    };
+}
+
+
 /// Function that prints the basic information of the OS
 /// Uses the writer struct to write to the VGA buffer
 pub fn print_introduction(){
     // Using the write trait for this function
     use core::fmt::Write; 
 
-    /// Create a new writer 
+    // Create a new writer 
     let mut writer = Writer{
         column_position: 0,
         color_code: ColorCode::new(Color::Yellow, Color::Black),
